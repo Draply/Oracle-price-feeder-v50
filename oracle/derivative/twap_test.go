@@ -1,0 +1,111 @@
+package derivative
+
+import (
+	"testing"
+	"time"
+
+	"price-feeder/oracle/types"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+)
+
+var (
+	testHistoricalTickers1 = []types.TickerPrice{
+		{Price: sdk.NewDec(5), Volume: sdk.NewDec(2), Time: time.Unix(0, 0)},
+		{Price: sdk.NewDec(5), Volume: sdk.NewDec(2), Time: time.Unix(1, 0)},
+		{Price: sdk.NewDec(5), Volume: sdk.NewDec(2), Time: time.Unix(2, 0)},
+	}
+	testTvwapStart1 = time.Unix(0, 0)
+	testTvwapEnd1   = time.Unix(3, 0)
+	testTvwapPrice1 = sdk.NewDec(5)
+
+	testHistoricalTickers2 = []types.TickerPrice{
+		{Price: sdk.NewDec(5), Volume: sdk.NewDec(2), Time: time.Unix(0, 0)},
+		{Price: sdk.NewDec(10), Volume: sdk.NewDec(2), Time: time.Unix(1, 0)},
+		{Price: sdk.NewDec(15), Volume: sdk.NewDec(2), Time: time.Unix(2, 0)},
+		{Price: sdk.NewDec(100), Volume: sdk.NewDec(2), Time: time.Unix(3, 0)},
+	}
+	testTvwapStart2 = time.Unix(0, 0)
+	testTvwapEnd2   = time.Unix(3, 0)
+	testTvwapPrice2 = sdk.NewDec(10)
+
+	testHistoricalTickers4 = []types.TickerPrice{
+		{Price: sdk.NewDec(5), Time: time.Unix(2, 0)},
+		{Price: sdk.NewDec(8), Time: time.Unix(4, 0)},
+		{Price: sdk.NewDec(2), Time: time.Unix(6, 0)},
+		{Price: sdk.NewDec(7), Time: time.Unix(10, 0)},
+		{Price: sdk.NewDec(4), Time: time.Unix(12, 0)},
+		{Price: sdk.NewDec(5), Time: time.Unix(14, 0)},
+		{Price: sdk.NewDec(1), Time: time.Unix(16, 0)},
+		{Price: sdk.NewDec(3), Time: time.Unix(18, 0)},
+	}
+	testTvwapStart4 = time.Unix(3, 0)
+	testTvwapEnd4   = time.Unix(17, 0)
+	testTvwapPrice4 = math.LegacyNewDecFromStr("4.666666666666666666")
+
+	testHistoricalTickers5 = []types.TickerPrice{
+		{Price: math.LegacyNewDecFromStr("1662.000000000000000000"), Time: time.Unix(1675374725, 0)},
+		{Price: math.LegacyNewDecFromStr("1662.000000000000000000"), Time: time.Unix(1675374738, 0)},
+		{Price: math.LegacyNewDecFromStr("1662.260000000000000000"), Time: time.Unix(1675374762, 0)},
+		{Price: math.LegacyNewDecFromStr("1662.390000000000000000"), Time: time.Unix(1675374768, 0)},
+		{Price: math.LegacyNewDecFromStr("1662.360000000000000000"), Time: time.Unix(1675374786, 0)},
+		{Price: math.LegacyNewDecFromStr("1662.510000000000000000"), Time: time.Unix(1675374793, 0)},
+		{Price: math.LegacyNewDecFromStr("1659.900000000000000000"), Time: time.Unix(1675374854, 0)},
+		{Price: math.LegacyNewDecFromStr("1659.430000000000000000"), Time: time.Unix(1675374860, 0)},
+		{Price: math.LegacyNewDecFromStr("1656.520000000000000000"), Time: time.Unix(1675374885, 0)},
+		{Price: math.LegacyNewDecFromStr("1657.560000000000000000"), Time: time.Unix(1675374891, 0)},
+		{Price: math.LegacyNewDecFromStr("1656.600000000000000000"), Time: time.Unix(1675374909, 0)},
+		{Price: math.LegacyNewDecFromStr("1655.450000000000000000"), Time: time.Unix(1675374921, 0)},
+		{Price: math.LegacyNewDecFromStr("1656.230000000000000000"), Time: time.Unix(1675374940, 0)},
+		{Price: math.LegacyNewDecFromStr("1658.270000000000000000"), Time: time.Unix(1675374958, 0)},
+		{Price: math.LegacyNewDecFromStr("1656.730000000000000000"), Time: time.Unix(1675374976, 0)},
+		{Price: math.LegacyNewDecFromStr("1655.510000000000000000"), Time: time.Unix(1675374982, 0)},
+		{Price: math.LegacyNewDecFromStr("1654.250000000000000000"), Time: time.Unix(1675375007, 0)},
+		{Price: math.LegacyNewDecFromStr("1652.640000000000000000"), Time: time.Unix(1675375019, 0)},
+		{Price: math.LegacyNewDecFromStr("1654.320000000000000000"), Time: time.Unix(1675375037, 0)},
+		{Price: math.LegacyNewDecFromStr("1655.540000000000000000"), Time: time.Unix(1675375049, 0)},
+		{Price: math.LegacyNewDecFromStr("1655.630000000000000000"), Time: time.Unix(1675375074, 0)},
+		{Price: math.LegacyNewDecFromStr("1654.930000000000000000"), Time: time.Unix(1675375080, 0)},
+		{Price: math.LegacyNewDecFromStr("1656.130000000000000000"), Time: time.Unix(1675375098, 0)},
+		{Price: math.LegacyNewDecFromStr("1654.480000000000000000"), Time: time.Unix(1675375110, 0)},
+		{Price: math.LegacyNewDecFromStr("1652.950000000000000000"), Time: time.Unix(1675375129, 0)},
+		{Price: math.LegacyNewDecFromStr("1651.720000000000000000"), Time: time.Unix(1675375141, 0)},
+	}
+	testTvwapStart5 = time.Unix(1675374700, 0)
+	testTvwapEnd5   = time.Unix(1675375150, 0)
+	testTvwapPrice5 = math.LegacyNewDecFromStr("1657.903605769230769230")
+
+	testHistoricalTickers6 = []types.TickerPrice{
+		{Price: sdk.NewDec(8), Volume: math.LegacyZeroDec(), Time: time.Unix(0, 0)},
+		{Price: sdk.NewDec(11), Volume: math.LegacyZeroDec(), Time: time.Unix(3, 0)},
+		{Price: sdk.NewDec(11), Volume: math.LegacyZeroDec(), Time: time.Unix(6, 0)},
+		{Price: sdk.NewDec(9), Volume: math.LegacyZeroDec(), Time: time.Unix(9, 0)},
+	}
+	testTvwapStart6 = time.Unix(0, 0)
+	testTvwapEnd6   = time.Unix(12, 0)
+	testTvwapPrice6 = math.LegacyNewDecFromStr("10")
+)
+
+func TestTvwapDerivative_tvwap(t *testing.T) {
+	result1, _, err := Twap(testHistoricalTickers1, testTvwapStart1, testTvwapEnd1)
+	require.NoError(t, err)
+	require.Equal(t, testTvwapPrice1, result1)
+
+	result2, _, err := Twap(testHistoricalTickers2, testTvwapStart2, testTvwapEnd2)
+	require.NoError(t, err)
+	require.Equal(t, testTvwapPrice2, result2)
+
+	result4, _, err := Twap(testHistoricalTickers4, testTvwapStart4, testTvwapEnd4)
+	require.NoError(t, err)
+	require.Equal(t, testTvwapPrice4, result4)
+
+	result5, _, err := Twap(testHistoricalTickers5, testTvwapStart5, testTvwapEnd5)
+	require.NoError(t, err)
+	require.Equal(t, testTvwapPrice5, result5)
+
+	result6, _, err := Twap(testHistoricalTickers6, testTvwapStart6, testTvwapEnd6)
+	require.NoError(t, err)
+	require.Equal(t, testTvwapPrice6, result6)
+}

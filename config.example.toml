@@ -1,0 +1,64 @@
+gas_adjustment = 1.7
+gas_prices = "1stake"
+enable_server = true
+enable_voter = true
+
+history_db = "/var/tmp/feeder.db"
+
+[server]
+listen_addr = "0.0.0.0:7171"
+read_timeout = "20s"
+verbose_cors = true
+write_timeout = "20s"
+
+[rpc]
+grpc_endpoint = "localhost:9090"
+rpc_timeout = "100ms"
+tmrpc_endpoint = "http://localhost:26657"
+
+[telemetry]
+enable_hostname = true
+enable_hostname_label = true
+enable_service_label = true
+enabled = true
+global_labels = [["chain-id", "kaiyo-1"]]
+service_name = "price-feeder"
+type = "prometheus"
+
+[account]
+address = "stake140fehngcrxvhdt84x729p3f0qmkmea8nu8sewv"
+chain_id = "localchain_9000-1"
+validator = "stakevaloper140fehngcrxvhdt84x729p3f0qmkmea8nmhcjq3"
+prefix = "stake"
+
+
+[keyring]
+backend = "file"
+dir = "<absolute_path>"
+
+[[healthchecks]]
+url = "https://hc-ping.com/HEALTHCHECK-UUID"
+timeout = "10s"
+
+[[deviation_thresholds]]
+base = "USDT"
+threshold = "2"
+
+[[provider_min_overrides]]
+denoms = ["BTC"]
+providers = 5
+
+[[currency_pairs]]
+base = "USDT"
+quote = "USD"
+providers = ["coinbase", "kraken", "crypto", "gate", "binanceus"]
+
+[[currency_pairs]]
+base = "BTC"
+quote = "USD"
+providers = ["coinbase", "kraken", "crypto"]
+
+[[currency_pairs]]
+base = "BTC"
+quote = "USDT"
+providers = ["binance", "mexc", "huobi"]

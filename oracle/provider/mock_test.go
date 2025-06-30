@@ -1,0 +1,80 @@
+package provider
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"price-feeder/oracle/types"
+
+	"cosmossdk.io/math"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+)
+
+func TestMockProvider_GetTickerPrices(t *testing.T) {
+	mp, _ := NewMockProvider(context.Background(), zerolog.Nop(), mockDefaultEndpoints)
+
+	t.Run("valid_request_single_ticker", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			require.Equal(t, "/", req.URL.String())
+			resp := `Base,Quote,Price,Volume
+UMEE,USDT,3.04,1827884.77
+ATOM,USDC,21.84,1827884.77
+`
+			rw.Write([]byte(resp))
+		}))
+		defer server.Close()
+
+		mp.http = server.Client()
+		mp.endpoints.Urls = []string{server.URL}
+
+		prices, err := mp.GetTickerPrices(types.CurrencyPair{Base: "UMEE", Quote: "USDT"})
+		require.NoError(t, err)
+		require.Len(t, prices, 1)
+		require.Equal(t, math.LegacyNewDecFromStr("3.04"), prices["UMEEUSDT"].Price)
+		require.Equal(t, math.LegacyNewDecFromStr("1827884.77"), prices["UMEEUSDT"].Volume)
+	})
+
+	t.Run("valid_request_multi_ticker", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			require.Equal(t, "/", req.URL.String())
+			resp := `Base,Quote,Price,Volume
+UMEE,USDT,3.04,1827884.77
+ATOM,USDC,21.84,1827884.77
+`
+			rw.Write([]byte(resp))
+		}))
+		defer server.Close()
+
+		mp.http = server.Client()
+		mp.endpoints.Urls = []string{server.URL}
+
+		prices, err := mp.GetTickerPrices(
+			types.CurrencyPair{Base: "UMEE", Quote: "USDT"},
+			types.CurrencyPair{Base: "ATOM", Quote: "USDC"},
+		)
+		require.NoError(t, err)
+		require.Len(t, prices, 2)
+		require.Equal(t, math.LegacyNewDecFromStr("3.04"), prices["UMEEUSDT"].Price)
+		require.Equal(t, math.LegacyNewDecFromStr("1827884.77"), prices["UMEEUSDT"].Volume)
+		require.Equal(t, math.LegacyNewDecFromStr("21.84"), prices["ATOMUSDC"].Price)
+		require.Equal(t, math.LegacyNewDecFromStr("1827884.77"), prices["ATOMUSDC"].Volume)
+	})
+
+	t.Run("invalid_request_bad_response", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			require.Equal(t, "/", req.URL.String())
+			rw.Write([]byte(`FOO`))
+		}))
+		defer server.Close()
+
+		mp.http = server.Client()
+		mp.endpoints.Urls = []string{server.URL}
+
+		prices, err := mp.GetTickerPrices(types.CurrencyPair{Base: "UMEE", Quote: "USDT"})
+		require.Error(t, err)
+		require.Nil(t, prices)
+	})
+}
