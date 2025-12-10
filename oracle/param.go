@@ -1,6 +1,6 @@
 package oracle
 
-import oracletypes "onematrix/x/oracle/types"
+import oracletypes "x/oracle/types"
 
 const (
 	// paramsCacheInterval represents the amount of blocks
